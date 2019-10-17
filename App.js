@@ -1,19 +1,16 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import Home from './screens/Home'
+import Profile from './screens/Profile'
+import Conversation from './screens/Conversation'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
-}
+import { createStackNavigator } from 'react-navigation-stack'
+import { createAppContainer } from 'react-navigation'
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const RootStack = createStackNavigator({
+  Home: Home,
+  Profile: Profile,
+  Conversation: Conversation,
+})
+
+const AppContainer = createAppContainer(RootStack)
+
+export default AppContainer
