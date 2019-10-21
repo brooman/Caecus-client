@@ -42,6 +42,8 @@ export default Conversation = () => {
   }, [])
 
   const handleSend = () => {
+    if (newMessage.length === 0) return
+
     setMessages([
       ...messages,
       {
