@@ -1,16 +1,97 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, ScrollView, TextInput } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { Icon } from 'react-native-elements'
+import Message from '../components/Message'
+import { TouchableHighlight } from 'react-native-gesture-handler'
 
 export default Conversation = () => {
+  const [participants, setParticipants] = useState([])
   const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    setParticipants([
+      {
+        id: 0,
+        name: 'Me',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        user: true,
+      },
+      {
+        id: 1,
+        name: 'SomeoneElse',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        user: false,
+      },
+    ])
+
+    setMessages([
+      {
+        id: 0,
+        sender: 1,
+        content: 'Hi',
+        timestamp: '1571319880',
+      },
+      {
+        id: 1,
+        sender: 0,
+        content: 'Hello',
+        timestamp: '1571319990',
+      },
+    ])
+  }, [])
+
+  const handleSend = () => {
+    setMessages([
+      ...messages,
+      {
+        id: null,
+        sender: 0,
+        content: newMessage,
+        timestamp: Date.now(),
+      },
+    ])
+
+    setNewMessage('')
+  }
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.messageContainer}></ScrollView>
+      <View style={styles.header}>
+        <Text>
+          {participants
+            .map(p => {
+              return p.name
+            })
+            .join(', ')}
+        </Text>
+      </View>
+      <ScrollView style={styles.messageContainer}>
+        {messages.map((item, i) => {
+          return (
+            <Message
+              key={i}
+              sender={participants.find(p => {
+                return p.id === item.sender
+              })}
+              content={item.content}
+              timestamp={item.timestamp}
+            />
+          )
+        })}
+      </ScrollView>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} placeholder="Write message" />
+        <TextInput
+          style={styles.input}
+          placeholder="Write message"
+          value={newMessage}
+          onChangeText={text => {
+            setNewMessage(text)
+          }}
+        />
+        <TouchableOpacity onPress={handleSend}>
+          <Icon reverse name="send" type="feather" style={styles.send} />
+        </TouchableOpacity>
       </View>
     </View>
   )
@@ -23,16 +104,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  header: {
+    height: 75,
+  },
   messageContainer: {
-    height: '95%',
+    height: 'auto',
+    width: '100%',
   },
   inputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
-    backgroundColor: '#eee',
+    maxHeight: 80,
+    backgroundColor: '#444',
     paddingVertical: 30,
     paddingHorizontal: 5,
   },
   input: {
+    flexGrow: 80,
     backgroundColor: '#fff',
     height: 50,
     paddingHorizontal: 15,
@@ -40,6 +131,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderRadius: 32,
     marginLeft: 15,
-    marginRight: 15,
+  },
+  send: {
+    width: 32,
   },
 })
