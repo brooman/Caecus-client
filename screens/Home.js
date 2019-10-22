@@ -14,7 +14,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -23,7 +23,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -32,7 +32,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -41,7 +41,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -50,7 +50,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -59,7 +59,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
       {
@@ -68,7 +68,7 @@ export default Home = props => {
       },
       {
         name: 'Chris Jackson',
-        avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
         subtitle: 'Vice Chairman',
       },
     ])
@@ -89,7 +89,7 @@ export default Home = props => {
                 title={item.name}
                 subtitle={item.subtitle}
                 leftAvatar={{
-                  source: item.avatar_url && { uri: item.avatar_url },
+                  source: item.image && { uri: item.image },
                   title: item.name[0],
                 }}
                 onPress={() => {
