@@ -1,109 +1,88 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
+import { database } from '../app/database'
 import { Card, ListItem } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
+import { DatabaseContext } from '../app/DatabaseContext'
 
 export default Home = props => {
+  const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [conversations, setConversations] = useState([])
 
   useEffect(() => {
-    setConversations([
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
+    database.transaction(
+      tx => {
+        tx.executeSql(
+          `
+          SELECT
+            conversations.id as id,
+            senders.name,
+            senders.image
+          FROM conversations
+          INNER JOIN senders ON conversations.sender_id = senders.id
+          `,
+          null,
+          (_, { rows: { _array } }) => setConversations(_array),
+        )
       },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
+      e => {
+        console.warn(e)
       },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-      {
-        name: 'Amy Farha',
-        subtitle: 'Vice President',
-      },
-      {
-        name: 'Chris Jackson',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        subtitle: 'Vice Chairman',
-      },
-    ])
-  }, [])
+    )
+  }, [databaseState])
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.container}>
         <Card containerStyle={styles.card}>
-          {conversations.map((item, i) => {
-            return (
-              <ListItem
-                key={i}
-                Component={TouchableScale}
-                friction={90}
-                tension={100}
-                activeScale={0.95}
-                title={item.name}
-                subtitle={item.subtitle}
-                leftAvatar={{
-                  source: item.image && { uri: item.image },
-                  title: item.name[0],
-                }}
-                onPress={() => {
-                  props.navigation.navigate('Conversation')
-                }}
-                bottomDivider
-                chevron
-              />
-            )
-          })}
+          <ListItem
+            Component={TouchableScale}
+            friction={90}
+            tension={100}
+            activeScale={0.95}
+            title="Start new conversation"
+            onPress={() => {
+              props.navigation.navigate('NewConversation')
+            }}
+            bottomDivider
+            chevron
+          />
+
+          <>
+            {conversations.map((item, i) => {
+              console.log(item)
+              return (
+                <ListItem
+                  key={i}
+                  Component={TouchableScale}
+                  friction={90}
+                  tension={100}
+                  activeScale={0.95}
+                  title={item.name}
+                  //subtitle={item.lastMessage}
+                  leftAvatar={{
+                    source: item.image && { uri: item.image },
+                    title: item.name[0],
+                  }}
+                  onPress={() => {
+                    props.navigation.navigate('Conversation', {
+                      id: item.id,
+                    })
+                  }}
+                  bottomDivider
+                  chevron
+                />
+              )
+            })}
+          </>
         </Card>
       </ScrollView>
     </View>
   )
+}
+
+Home.navigationOptions = {
+  title: 'Home',
 }
 
 const styles = StyleSheet.create({

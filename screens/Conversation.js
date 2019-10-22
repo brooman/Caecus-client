@@ -1,13 +1,28 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { database } from '../app/database'
+import { DatabaseContext } from '../app/DatabaseContext'
 import { Icon } from 'react-native-elements'
 import Message from '../components/Message'
 import { TouchableHighlight } from 'react-native-gesture-handler'
 
-export default Conversation = () => {
+export default Conversation = props => {
+  const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [participants, setParticipants] = useState([])
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
+
+  const getMessages = () => {
+    database.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM messages WHERE conversation_id = ?',
+        [props.navigation.getParam('id', null)],
+        (_, { rows: { _array } }) => {
+          setMessages(_array)
+        },
+      )
+    })
+  }
 
   useEffect(() => {
     setParticipants([
@@ -25,34 +40,21 @@ export default Conversation = () => {
       },
     ])
 
-    setMessages([
-      {
-        id: 0,
-        sender: 1,
-        content: 'Hi',
-        timestamp: '1571319880',
-      },
-      {
-        id: 1,
-        sender: 0,
-        content: 'Hello',
-        timestamp: '1571319990',
-      },
-    ])
-  }, [])
+    getMessages()
+  }, [databaseState])
 
   const handleSend = () => {
     if (newMessage.length === 0) return
 
-    setMessages([
-      ...messages,
-      {
-        id: null,
-        sender: 0,
-        content: newMessage,
-        timestamp: Date.now(),
-      },
-    ])
+    database.transaction(tx => {
+      tx.executeSql(
+        'INSERT INTO messages (content, type, date, sender_id, conversation_id) VALUES (?, ?, ?, ?, ?)',
+        [newMessage, 'text', new Date(), 0, props.navigation.getParam('id', null)],
+        () => {
+          setDatabaseState(prevState => prevState + 1)
+        },
+      )
+    })
 
     setNewMessage('')
   }
@@ -74,7 +76,7 @@ export default Conversation = () => {
             <Message
               key={i}
               sender={participants.find(p => {
-                return p.id === item.sender
+                return p.id === item.sender_id
               })}
               content={item.content}
               timestamp={item.timestamp}
@@ -97,6 +99,10 @@ export default Conversation = () => {
       </View>
     </View>
   )
+}
+
+Conversation.navigationOptions = {
+  title: 'Conversation',
 }
 
 const styles = StyleSheet.create({
