@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, ScrollView } from 'react-native'
 import { database } from '../app/database'
-import { Card, ListItem } from 'react-native-elements'
+import { Card, ListItem, Icon } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
 import { DatabaseContext } from '../app/DatabaseContext'
 
@@ -45,45 +45,46 @@ const NewConversation = props => {
   }
 
   return (
-    <ScrollView styles={styles.container}>
-      <ListItem
-        Component={TouchableScale}
+    <>
+      <ScrollView styles={styles.container}>
+        <>
+          {senders.map((item, i) => {
+            return (
+              <ListItem
+                key={i}
+                Component={TouchableScale}
+                friction={90}
+                tension={100}
+                activeScale={0.95}
+                title={item.name}
+                //subtitle={item.subtitle}
+                leftAvatar={{
+                  source: item.image && { uri: item.image },
+                  title: item.name[0],
+                }}
+                onPress={() => {
+                  startConversation(item.id)
+                }}
+                bottomDivider
+                chevron
+              />
+            )
+          })}
+        </>
+      </ScrollView>
+      <TouchableScale
+        style={styles.addButton}
         friction={90}
         tension={100}
-        activeScale={0.95}
-        title="Add new contact"
+        activeScale={0.9}
+        title="Start new conversation"
         onPress={() => {
           props.navigation.navigate('AddSender')
         }}
-        bottomDivider
-        chevron
-      />
-
-      <>
-        {senders.map((item, i) => {
-          return (
-            <ListItem
-              key={i}
-              Component={TouchableScale}
-              friction={90}
-              tension={100}
-              activeScale={0.95}
-              title={item.name}
-              //subtitle={item.subtitle}
-              leftAvatar={{
-                source: item.image && { uri: item.image },
-                title: item.name[0],
-              }}
-              onPress={() => {
-                startConversation(item.id)
-              }}
-              bottomDivider
-              chevron
-            />
-          )
-        })}
-      </>
-    </ScrollView>
+      >
+        <Icon raised reverse name="plus" type="feather" size={26} />
+      </TouchableScale>
+    </>
   )
 }
 
@@ -101,5 +102,10 @@ const styles = StyleSheet.create({
   card: {
     padding: 0,
     margin: 0,
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
   },
 })
