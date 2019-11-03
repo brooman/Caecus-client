@@ -1,6 +1,10 @@
-export default id => {
+export default () => {
   return `
-    const registrationId = libsignal.KeyHelper.generateRegistrationId();
-    window.ReactNativeWebView.postMessage(JSON.stringify({id: ${id}, type: 'RegistrationId', value: registrationId }));
+    ;(() => {
+      const registrationId = libsignal.KeyHelper.generateRegistrationId()
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: 'RegistrationId', value: registrationId }),
+      )
+    })()
   `
 }
