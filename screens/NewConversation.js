@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, ScrollView } from 'react-native'
-import { database } from '../app/database'
+import { database } from '../app/database/database'
 import { Card, ListItem, Icon } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
-import { DatabaseContext } from '../app/DatabaseContext'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 const NewConversation = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)

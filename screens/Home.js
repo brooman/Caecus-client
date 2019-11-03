@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
-import { database } from '../app/database'
+import { database } from '../app/database/database'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
-import { DatabaseContext } from '../app/DatabaseContext'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 export default Home = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
@@ -37,7 +37,6 @@ export default Home = props => {
         <Card containerStyle={styles.card}>
           <>
             {conversations.map((item, i) => {
-              console.log(item)
               return (
                 <ListItem
                   key={i}

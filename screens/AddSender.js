@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react'
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
-import { database } from '../app/database'
-import { DatabaseContext } from '../app/DatabaseContext'
+import { database } from '../app/database/database'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 const AddSender = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
