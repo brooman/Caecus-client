@@ -23,23 +23,38 @@ export default useSignal = () => {
         break
     }
   }
-
-  const createIdentity = () => {
-    run(Scripts.createIdentity())
+  const generateRunId = () => {
+    return Math.floor(Date.now() + Math.random().toString())
   }
 
-  const createSignedPreKey = keyId => {
-    run(Scripts.createSignedPreKey(Store.getIdentityKeyPair(), keyId))
+  const getRegistrationId = async () => {
+    return await Store.getRegistrationId()
   }
 
-  const createPreKeys = (initialKeyId, count) => {
-    run(Scripts.createPreKeys(initialKeyId, count))
+  const createRegistrationId = async () => {
+    const id = generateRunId()
+    return await run(Scripts.createRegistrationId(id), id)
   }
 
-  const registerWithServer = async () => {
+  const createIdentity = async () => {
+    const id = generateRunId()
+    return await run(Scripts.createIdentity(id), id)
+  }
+
+  const createSignedPreKey = async keyId => {
+    const id = generateRunId()
+    return await run(Scripts.createSignedPreKey(await Store.getIdentityKeyPair(id), keyId), id)
+  }
+
+  const createPreKeys = async (initialKeyId, count) => {
+    const id = generateRunId()
+    return await run(Scripts.createPreKeys(id, initialKeyId, count), id)
+  }
+
+  const registerWithServer = async username => {
     const data = {
-      username: 'test',
-      password: 'secret',
+      username: username,
+      password: await Store.getPublicIdentityKey(),
       deviceId: 1,
       identityKey: await Store.getPublicIdentityKey(),
       registrationId: await Store.getRegistrationId(),
@@ -52,9 +67,11 @@ export default useSignal = () => {
 
   return {
     handle,
+    createRegistrationId,
     createIdentity,
     createSignedPreKey,
     createPreKeys,
+    getRegistrationId,
     registerWithServer,
   }
 }
