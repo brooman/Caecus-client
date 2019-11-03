@@ -10,33 +10,21 @@ const SignalContextProvider = props => {
   const { handle } = useSignal()
   const _ref = useRef(null)
 
-  let running = false
   const promises = {}
-  const callstack = []
 
   const run = async (code, id) => {
     const promise = new Promise(resolve => {
       promises[id] = resolve
     })
 
-    callstack.push(code)
-
-    if (!running) runner(callstack.shift())
+    _ref.current.injectJavaScript(code)
 
     return promise
   }
 
-  const runner = code => {
-    running = true
-    _ref.current.injectJavaScript(code)
-
-    if (callstack.length < 1) {
-      running = false
-    }
-  }
-
   return (
     <SignalContext.Provider value={{ run: run }}>
+      {console.log('render')}
       <View hide>
         <WebView
           ref={_ref}
@@ -48,7 +36,6 @@ const SignalContextProvider = props => {
             handle(data)
             promises[data.id](data.value)
             delete promises[data.id]
-            runner(callstack.shift())
           }}
         />
       </View>
