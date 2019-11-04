@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { createDatabase } from './app/database/database'
 
@@ -12,13 +12,8 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createAppContainer } from 'react-navigation'
 import { DatabaseContextProvider } from './app/database/DatabaseContext'
 import { SignalContextProvider } from './app/signal/SignalContext'
-import useSignal from './app/signal/useSignal'
-
-import * as FileSystem from 'expo-file-system'
 
 createDatabase()
-
-console.log(FileSystem.documentDirectory)
 
 const RootStack = createStackNavigator({
   Home: Home,

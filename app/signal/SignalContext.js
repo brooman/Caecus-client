@@ -24,7 +24,6 @@ const SignalContextProvider = props => {
 
   return (
     <SignalContext.Provider value={{ run: run }}>
-      {console.log('render')}
       <View hide>
         <WebView
           ref={_ref}

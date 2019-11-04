@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
+import Installation from './Installation'
 import { database } from '../app/database/database'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
 import { DatabaseContext } from '../app/database/DatabaseContext'
+import * as AppStorage from '../app/AppStorage'
 
 export default Home = props => {
+  const [isInstalled, setIsInstalled] = useState(true)
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [conversations, setConversations] = useState([])
 
@@ -30,6 +33,12 @@ export default Home = props => {
       },
     )
   }, [databaseState])
+
+  AppStorage.getUser().then(res => setIsInstalled(res))
+
+  if (!isInstalled) {
+    return <Installation />
+  }
 
   return (
     <View style={styles.container}>
@@ -81,7 +90,7 @@ export default Home = props => {
 }
 
 Home.navigationOptions = {
-  title: 'Home',
+  title: 'Caecus',
 }
 
 const styles = StyleSheet.create({
