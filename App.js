@@ -8,7 +8,7 @@ import Home from './screens/Home'
 import Profile from './screens/Profile'
 import Conversation from './screens/Conversation'
 import NewConversation from './screens/NewConversation'
-import AddSender from './screens/AddSender'
+import NewContact from './screens/NewContact'
 import Installation from './screens/Installation'
 
 import { createStackNavigator } from 'react-navigation-stack'
@@ -25,7 +25,7 @@ const RootStack = createStackNavigator({
   Profile: Profile,
   Conversation: Conversation,
   NewConversation: NewConversation,
-  AddSender: AddSender,
+  NewContact: NewContact,
   Installation: Installation,
 })
 

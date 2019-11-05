@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements'
 import { database } from '../app/database/database'
 import { DatabaseContext } from '../app/database/DatabaseContext'
 
-const AddSender = props => {
+const NewContact = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [name, setName] = useState('')
 
@@ -22,7 +22,7 @@ const AddSender = props => {
     props.navigation.navigate('NewConversation')
   }
 
-  AddSender.navigationOptions = {
+  NewContact.navigationOptions = {
     title: 'Find Contact',
   }
 
@@ -45,7 +45,7 @@ const AddSender = props => {
   )
 }
 
-export default AddSender
+export default NewContact
 
 const styles = StyleSheet.create({
   container: {
