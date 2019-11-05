@@ -1,3 +1,6 @@
+import { AsyncStorage } from 'react-native'
+import { database } from '../database/database'
+
 const storeRegistrationId = async value => {
   await AsyncStorage.setItem('RegistrationId', JSON.stringify(value))
 
@@ -23,10 +26,43 @@ const getIdentityKeyPair = async () => {
   return await AsyncStorage.getItem('IdentityKeyPair')
 }
 
+const storePreKeys = preKeys => {
+  const pkeys = JSON.parse(preKeys)
+  const formatted = pkeys.map(key => {
+    return {
+      keyId: key.value.keyId,
+      pubKey: key.value.keyPair.pubKey,
+      privKey: key.value.keyPair.privKey,
+    }
+  })
+
+  database.transaction(
+    tx => {
+      formatted.map(item => {
+        tx.executeSql(
+          `INSERT INTO preKeys (keyId, publicKey, privateKey) VALUES (?, ?, ?)`,
+          [item.keyId, item.pubKey, item.privKey],
+          null,
+        )
+      })
+    },
+    e => console.log(e),
+  )
+
+  return true
+}
+
+const getPreKey = () => {}
+
+const deletePreKey = keyId => {}
+
 export {
   storeRegistrationId,
   storeIdentityKeyPair,
+  storePreKeys,
   getRegistrationId,
   getPublicIdentityKey,
   getIdentityKeyPair,
+  getPreKey,
+  deletePreKey,
 }

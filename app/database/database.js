@@ -23,11 +23,20 @@ const createDatabase = () => {
         );
       `)
       tx.executeSql(`
-        CREATE TABLE IF NOT EXISTS senders (
+        CREATE TABLE IF NOT EXISTS contacts (
           id	INTEGER PRIMARY KEY AUTOINCREMENT,
           name	TEXT NOT NULL,
+          identityKey TEXT NOT NULL,
           image	BLOB
         );
+      `)
+      tx.executeSql(`
+        CREATE TABLE IF NOT EXISTS preKeys (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          keyId INTEGER NOT NULL,
+          publicKey TEXT NOT NULL,
+          privateKey TEXT NOT NULL
+        )
       `)
     },
     e => {

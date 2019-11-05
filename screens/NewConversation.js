@@ -7,11 +7,13 @@ import { DatabaseContext } from '../app/database/DatabaseContext'
 
 const NewConversation = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
-  const [senders, setSenders] = useState([])
+  const [contacts, setContacts] = useState([])
 
   useEffect(() => {
     database.transaction(tx => {
-      tx.executeSql(`SELECT * FROM senders`, null, (_, { rows: { _array } }) => setSenders(_array))
+      tx.executeSql(`SELECT * FROM contacts`, null, (_, { rows: { _array } }) =>
+        setContacts(_array),
+      )
     })
   }, [databaseState])
 
@@ -31,7 +33,7 @@ const NewConversation = props => {
 
       if (conversationId === null) {
         tx.executeSql(
-          `INSERT INTO conversations (name, sender_id) VALUES ((SELECT name FROM senders WHERE id = ?), ?)`,
+          `INSERT INTO conversations (name, sender_id) VALUES ((SELECT name FROM contacts WHERE id = ?), ?)`,
           [id, id],
           (tx, results) => {
             conversationId = results.insertId
@@ -48,7 +50,7 @@ const NewConversation = props => {
     <>
       <ScrollView styles={styles.container}>
         <>
-          {senders.map((item, i) => {
+          {contacts.map((item, i) => {
             return (
               <ListItem
                 key={i}

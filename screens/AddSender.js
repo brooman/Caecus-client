@@ -13,7 +13,7 @@ const AddSender = props => {
 
     database.transaction(
       tx => {
-        tx.executeSql(`INSERT INTO senders (name) VALUES (?)`, [name], null)
+        tx.executeSql(`INSERT INTO contacts (name) VALUES (?)`, [name], null)
       },
       e => console.log(e),
     )
