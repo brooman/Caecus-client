@@ -2,12 +2,10 @@ import React, { useRef, useState, forwardRef, useCallback, useEffect } from 'rea
 import Config from '../config'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
-import useSignal from './useSignal'
 
 const SignalContext = React.createContext([{}, () => {}])
 
 const SignalContextProvider = props => {
-  const { handle } = useSignal()
   const _ref = useRef(null)
 
   let resolver

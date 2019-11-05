@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
-import Installation from './Installation'
 import { database } from '../app/database/database'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
@@ -19,10 +18,10 @@ export default Home = props => {
           `
           SELECT
             conversations.id as id,
-            senders.name,
-            senders.image
+            contacts.name,
+            contacts.image
           FROM conversations
-          INNER JOIN senders ON conversations.sender_id = senders.id
+          INNER JOIN contacts ON conversations.sender_id = contacts.id
           `,
           null,
           (_, { rows: { _array } }) => setConversations(_array),
@@ -34,11 +33,13 @@ export default Home = props => {
     )
   }, [databaseState])
 
-  AppStorage.getUser().then(res => setIsInstalled(res))
+  useEffect(() => {
+    AppStorage.getUser().then(res => setIsInstalled(res))
 
-  if (!isInstalled) {
-    return <Installation />
-  }
+    if (!isInstalled) {
+      props.navigation.navigate('Installation')
+    }
+  })
 
   return (
     <View style={styles.container}>

@@ -22,6 +22,7 @@ const Installation = props => {
 
     SignalStore.storeIdentityKeyPair(JSON.parse(identity).value)
     SignalStore.storeRegistrationId(registrationId)
+    SignalStore.storePreKeys(preKeys)
 
     const signedPreKeyPublic = key => {
       let k = JSON.parse(key)
@@ -73,6 +74,7 @@ const Installation = props => {
     setLoading(false)
     setUser(json.user)
     setState(state + 1)
+    props.navigation.navigate('Home')
   }
 
   switch (state) {
@@ -120,6 +122,11 @@ const Installation = props => {
         </View>
       )
   }
+}
+
+Installation.navigationOptions = {
+  title: 'Installation',
+  headerLeft: null,
 }
 
 const styles = StyleSheet.create({
