@@ -26,7 +26,10 @@ const createDatabase = () => {
         CREATE TABLE IF NOT EXISTS contacts (
           id	INTEGER PRIMARY KEY AUTOINCREMENT,
           name	TEXT NOT NULL,
+          identifier TEXT NOT NULL,
           identityKey TEXT NOT NULL,
+          deviceId INT NOT NULL,
+          registrationId NOT NULL,
           image	BLOB
         );
       `)

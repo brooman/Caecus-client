@@ -81,7 +81,7 @@ const NewConversation = props => {
         activeScale={0.9}
         title="Start new conversation"
         onPress={() => {
-          props.navigation.navigate('AddSender')
+          props.navigation.navigate('NewContact')
         }}
       >
         <Icon raised reverse name="plus" type="feather" size={26} />
