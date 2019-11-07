@@ -1,6 +1,14 @@
 import { AsyncStorage } from 'react-native'
 import { database } from '../database/database'
 
+const saveInMemoryStore = async value => {
+  await AsyncStorage.setItem('_store', value)
+}
+
+const getInMemoryStore = async () => {
+  return await AsyncStorage.getItem('_store')
+}
+
 const storeRegistrationId = async value => {
   await AsyncStorage.setItem('RegistrationId', JSON.stringify(value))
 
@@ -57,6 +65,8 @@ const getPreKey = () => {}
 const deletePreKey = keyId => {}
 
 export {
+  saveInMemoryStore,
+  getInMemoryStore,
   storeRegistrationId,
   storeIdentityKeyPair,
   storePreKeys,

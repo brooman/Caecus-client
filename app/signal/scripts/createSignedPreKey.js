@@ -7,7 +7,7 @@ export default (identityKeyPair, keyId) => {
         privKey: str2ab(ikp.value.privKey)
       }
 
-      libsignal.KeyHelper.generateSignedPreKey(identity, 213).then(function(signedPreKey) {
+      libsignal.KeyHelper.generateSignedPreKey(identity, ${keyId}).then(function(signedPreKey) {
         const res = JSON.stringify({
           type: 'SignedPreKey',
           value: {
@@ -19,8 +19,8 @@ export default (identityKeyPair, keyId) => {
             signature: ab2str(signedPreKey.signature),
           }
         })
-
-        window.ReactNativeWebView.postMessage(res);
+        window.SignalStore.storeSignedPreKey(signedPreKey.keyId, signedPreKey.keyPair)
+        postMessage(res);
         return true
       });
 

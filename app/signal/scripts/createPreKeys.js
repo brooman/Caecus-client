@@ -15,8 +15,10 @@ export default (initialKeyId, count) => {
           }
           keys.push(res)
 
+          window.SignalStore.storePreKey(preKey.keyId, preKey.keyPair)
+
           if (keys.length == ${count}) {
-            window.ReactNativeWebView.postMessage(JSON.stringify(keys))
+            postMessage(JSON.stringify(keys))
           }
         })
       }

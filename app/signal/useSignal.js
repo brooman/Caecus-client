@@ -56,11 +56,19 @@ export default useSignal = () => {
     return run(Scripts.createPreKeys(initialKeyId, count))
   }
 
+  const startSession = res => {
+    const { username, identifier, deviceId } = res.user
+    const { identity, registrationId, signedPreKey, preKey } = res.preKeyBundle
+
+    return run(Scripts.startSession(res))
+  }
+
   return {
     createRegistrationId,
     createIdentity,
     createSignedPreKey,
     createPreKeys,
     getRegistrationId,
+    startSession,
   }
 }

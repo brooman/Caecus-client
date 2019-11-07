@@ -4,6 +4,7 @@ import { Input, Button } from 'react-native-elements'
 import * as SignalStore from '../app/signal/SignalStore'
 import useSignal from '../app/signal/useSignal'
 import * as AppStorage from '../app/AppStorage'
+import Config from '../app/config/'
 
 const Installation = props => {
   const [state, setState] = useState(0)
@@ -55,7 +56,7 @@ const Installation = props => {
       preKeys: preKeysPublic(preKeys),
     }
 
-    fetch('http://127.0.0.1:3333/auth/register', {
+    fetch(`${Config.host.http}auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

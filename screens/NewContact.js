@@ -3,23 +3,42 @@ import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { database } from '../app/database/database'
 import { DatabaseContext } from '../app/database/DatabaseContext'
+import Config from '../app/config/'
 
 const NewContact = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [name, setName] = useState('')
+  const [identifier, setIdentifier] = useState('')
+  const { startSession } = useSignal()
 
   const handleSubmit = () => {
-    if (name.length < 1) return
+    if (name.length < 3) return
 
-    database.transaction(
-      tx => {
-        tx.executeSql(`INSERT INTO contacts (name) VALUES (?)`, [name], null)
-      },
-      e => console.log(e),
-    )
-    setName('')
-    setDatabaseState(prevState => prevState + 1)
-    props.navigation.navigate('NewConversation')
+    fetch(`${Config.host.http}/connect`, {
+      method: 'POST',
+      body: JSON.parse({
+        username: name,
+        identifier: identifier,
+      }),
+    })
+      .then(res => JSON.parse(res.json()))
+      .then(res => {
+        const { username, identifier, deviceId } = res.user
+        const { identity, registrationId, signedPreKey, preKey } = res.preKeyBundle
+        database.transaction(
+          tx => {
+            tx.executeSql(
+              `INSERT INTO contacts (name, identifer, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?)`,
+              [username, identifier, identity, deviceId, registrationId],
+              null,
+            )
+          },
+          e => console.log(e),
+        )
+        setName('')
+        setDatabaseState(prevState => prevState + 1)
+        props.navigation.navigate('NewConversation')
+      })
   }
 
   NewContact.navigationOptions = {
@@ -35,6 +54,14 @@ const NewContact = props => {
           value={name}
           onChangeText={text => {
             setName(text)
+          }}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="identifier"
+          value={identifier}
+          onChangeText={text => {
+            setName('#' + text)
           }}
         />
         <TouchableOpacity onPress={handleSubmit}>
@@ -58,7 +85,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',

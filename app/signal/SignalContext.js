@@ -2,6 +2,7 @@ import React, { useRef, useState, forwardRef, useCallback, useEffect } from 'rea
 import Config from '../config'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
+import * as SignalStore from './SignalStore'
 
 const SignalContext = React.createContext([{}, () => {}])
 
@@ -20,16 +21,27 @@ const SignalContextProvider = props => {
     return await promise
   }
 
+  const html = `
+    <html>
+      <body>
+        <script src="${Config.host.http}/libsignal.js"></script>
+        <script src="${Config.host.http}/setup.js"></script>
+      </body>
+    </html>
+  `
+
   return (
     <SignalContext.Provider value={{ run: run }}>
       <View hide>
         <WebView
           ref={_ref}
           source={{
-            html: `<html><body><h1>Test</h1><script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script><script>function ab2str(r){return btoa(String.fromCharCode(...new Uint8Array(r)));}function str2ab(r){return Uint8Array.from([...atob(r)].map(ch => ch.charCodeAt())).buffer}</script></body></html>`,
+            html: html,
           }}
           onMessage={event => {
-            resolver(event.nativeEvent.data)
+            console.log(event.nativeEvent.data)
+            SignalStore.saveInMemoryStore(JSON.parse(event.nativeEvent.data).store)
+            resolver(JSON.parse(event.nativeEvent.data).msg)
           }}
         />
       </View>
