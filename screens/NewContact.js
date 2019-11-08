@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, createContext } from 'react'
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { database } from '../app/database/database'
@@ -14,18 +14,23 @@ const NewContact = props => {
   const handleSubmit = () => {
     if (name.length < 3) return
 
+    const body = {
+      username: name,
+      identifier: '#' + identifier,
+    }
+
     fetch(`${Config.host.http}/connect`, {
       method: 'POST',
-      body: JSON.parse({
-        username: name,
-        identifier: identifier,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
     })
-      .then(res => JSON.parse(res.json()))
+      .then(res => res.json())
       .then(res => {
         const { username, identifier, deviceId } = res.user
         const { identity, registrationId, signedPreKey, preKey } = res.preKeyBundle
-        database.transaction(
+        /*database.transaction(
           tx => {
             tx.executeSql(
               `INSERT INTO contacts (name, identifer, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?)`,
@@ -34,8 +39,9 @@ const NewContact = props => {
             )
           },
           e => console.log(e),
-        )
+        )*/
         setName('')
+        startSession(res)
         setDatabaseState(prevState => prevState + 1)
         props.navigation.navigate('NewConversation')
       })
@@ -47,27 +53,25 @@ const NewContact = props => {
 
   return (
     <View styles={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="name"
-          value={name}
-          onChangeText={text => {
-            setName(text)
-          }}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="identifier"
-          value={identifier}
-          onChangeText={text => {
-            setName('#' + text)
-          }}
-        />
-        <TouchableOpacity onPress={handleSubmit}>
-          <Icon reverse name="plus" type="feather" style={styles.send} />
-        </TouchableOpacity>
-      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="name"
+        value={name}
+        onChangeText={text => {
+          setName(text)
+        }}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="identifier"
+        value={identifier}
+        onChangeText={text => {
+          setIdentifier(text)
+        }}
+      />
+      <TouchableOpacity onPress={handleSubmit}>
+        <Icon reverse name="plus" type="feather" style={styles.send} />
+      </TouchableOpacity>
     </View>
   )
 }

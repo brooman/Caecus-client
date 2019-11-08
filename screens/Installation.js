@@ -56,7 +56,7 @@ const Installation = props => {
       preKeys: preKeysPublic(preKeys),
     }
 
-    fetch(`${Config.host.http}auth/register`, {
+    fetch(`${Config.host.http}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -3,11 +3,16 @@ import Config from '../config'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import * as SignalStore from './SignalStore'
+import Scripts from './scripts'
 
 const SignalContext = React.createContext([{}, () => {}])
 
 const SignalContextProvider = props => {
   const _ref = useRef(null)
+
+  useEffect(() => {
+    SignalStore.getInMemoryStore().then(res => run(Scripts.updateStore(res)))
+  }, [])
 
   let resolver
 
@@ -39,7 +44,7 @@ const SignalContextProvider = props => {
             html: html,
           }}
           onMessage={event => {
-            console.log(event.nativeEvent.data)
+            console.log(JSON.parse(event.nativeEvent.data).store)
             SignalStore.saveInMemoryStore(JSON.parse(event.nativeEvent.data).store)
             resolver(JSON.parse(event.nativeEvent.data).msg)
           }}

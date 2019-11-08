@@ -1,27 +1,28 @@
-export default (registrationId, deviceId, preKeyBundle) => {
+export default (identity, registrationId, deviceId, signedPreKey, preKey) => {
   return `
     ;(() => {
       const address = new libsignal.SignalProtocolAddress(${registrationId}, ${deviceId});
-      const sessionBuilder = new libsignal.SessionBuilder(store, address);
+      const sessionBuilder = new libsignal.SessionBuilder(window.SignalStore, address);
 
-      const preKeyBundle = JSON.parse('${preKeyBundle}')
+      const signedPreKey = JSON.parse('${JSON.stringify(signedPreKey)}')
+      const preKey = JSON.parse('${JSON.stringify(preKey)}')
 
       const promise = sessionBuilder.processPreKey({
         registrationId: ${registrationId},
-        identityKey: preKeyBundle.identity,
+        identityKey: str2ab('${identity}'),
         signedPreKey: {
-            keyId     : preKeyBundle.signedPreKey.keyId
-            publicKey : str2ab(preKeyBundle.signedPreKey.key),
-            signature : str2ab(preKeyBundle.signedPreKey.signature)
+            keyId     : signedPreKey.keyId,
+            publicKey : str2ab(signedPreKey.key),
+            signature : str2ab(signedPreKey.signature)
         },
         preKey: {
-            keyId     : preKeyBundle.preKey.keyId,
-            publicKey : str2ab(preKeyBundle.preKey.key)
+            keyId     : preKey.keyId,
+            publicKey : str2ab(preKey.key)
         }
       })
 
       promise.then(() => {
-        //encrypt messages
+        postMessage({'type': 'StartSession', value: '???'})
       })
 
     })()
