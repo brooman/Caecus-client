@@ -1,5 +1,5 @@
 export default store => {
   return `;(() => {
-    window.SignalStore.store = JSON.parse('${store}')
-  }();`
+    window.SignalStore.store = formatInput(JSON.parse('${store}'))
+  })();`
 }

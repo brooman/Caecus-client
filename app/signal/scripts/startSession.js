@@ -22,7 +22,7 @@ export default (identity, registrationId, deviceId, signedPreKey, preKey) => {
       })
 
       promise.then(() => {
-        postMessage({'type': 'StartSession', value: '???'})
+        postMessage({type: 'StartSession', value: address})
       })
 
     })()

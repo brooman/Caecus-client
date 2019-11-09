@@ -11,9 +11,9 @@ const NewConversation = props => {
 
   useEffect(() => {
     database.transaction(tx => {
-      tx.executeSql(`SELECT * FROM contacts`, null, (_, { rows: { _array } }) =>
-        setContacts(_array),
-      )
+      tx.executeSql(`SELECT * FROM contacts`, null, (_, { rows: { _array } }) => {
+        setContacts(_array)
+      })
     })
   }, [databaseState])
 

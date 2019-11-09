@@ -30,16 +30,16 @@ const NewContact = props => {
       .then(res => {
         const { username, identifier, deviceId } = res.user
         const { identity, registrationId, signedPreKey, preKey } = res.preKeyBundle
-        /*database.transaction(
+        database.transaction(
           tx => {
             tx.executeSql(
-              `INSERT INTO contacts (name, identifer, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?)`,
+              `INSERT INTO contacts (name, identifer, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?, ?)`,
               [username, identifier, identity, deviceId, registrationId],
               null,
             )
           },
           e => console.log(e),
-        )*/
+        )
         setName('')
         startSession(res)
         setDatabaseState(prevState => prevState + 1)

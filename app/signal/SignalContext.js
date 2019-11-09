@@ -10,10 +10,6 @@ const SignalContext = React.createContext([{}, () => {}])
 const SignalContextProvider = props => {
   const _ref = useRef(null)
 
-  useEffect(() => {
-    SignalStore.getInMemoryStore().then(res => run(Scripts.updateStore(res)))
-  }, [])
-
   let resolver
 
   const run = async code => {
@@ -43,10 +39,16 @@ const SignalContextProvider = props => {
           source={{
             html: html,
           }}
-          onMessage={event => {
-            console.log(JSON.parse(event.nativeEvent.data).store)
-            SignalStore.saveInMemoryStore(JSON.parse(event.nativeEvent.data).store)
-            resolver(JSON.parse(event.nativeEvent.data).msg)
+          onMessage={e => {
+            event = JSON.parse(e.nativeEvent.data)
+            SignalStore.saveInMemoryStore(event.store)
+            console.log(event.msg)
+            resolver(event.msg)
+          }}
+          onLoad={() => {
+            SignalStore.getInMemoryStore().then(res => {
+              return _ref.current.injectJavaScript(Scripts.updateStore(res))
+            })
           }}
         />
       </View>
