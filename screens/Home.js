@@ -21,7 +21,7 @@ export default Home = props => {
             contacts.name,
             contacts.image
           FROM conversations
-          INNER JOIN contacts ON conversations.sender_id = contacts.id
+          INNER JOIN contacts ON conversations.contactId = contacts.id
           `,
           null,
           (_, { rows: { _array } }) => setConversations(_array),

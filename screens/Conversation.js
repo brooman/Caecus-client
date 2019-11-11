@@ -5,17 +5,66 @@ import { DatabaseContext } from '../app/database/DatabaseContext'
 import { Icon } from 'react-native-elements'
 import Message from '../components/Message'
 import { TouchableHighlight } from 'react-native-gesture-handler'
+import useSignal from '../app/signal/useSignal'
+import * as AppStorage from '../app/AppStorage'
 
 export default Conversation = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [participants, setParticipants] = useState([])
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
+  const { sendMessage } = useSignal()
+
+  const getParticipants = async () => {
+    const user = await AppStorage.getUser()
+    const participants = [
+      {
+        id: 0,
+        name: user.username,
+        me: true,
+      },
+    ]
+    let contactId = null
+
+    database.transaction(tx => {
+      tx.executeSql(
+        'SELECT contactId FROM conversations WHERE id = ?',
+        [props.navigation.getParam('id', null)],
+        (_, { rows: { _array } }) => {
+          contactId = _array[0]['contactId']
+        },
+      )
+    })
+
+    database.transaction(tx => {
+      if (contactId) {
+        tx.executeSql(
+          'SELECT * FROM contacts WHERE id = ?',
+          [contactId],
+          (_, { rows: { _array } }) => {
+            const user = _array[0]
+
+            participants.push({
+              id: user.id,
+              identifer: user.identifer,
+              identityKey: user.identityKey,
+              image: user.image,
+              name: user.name,
+              registrationId: user.registrationId,
+              me: false,
+            })
+          },
+        )
+      }
+    })
+
+    setParticipants(participants)
+  }
 
   const getMessages = () => {
     database.transaction(tx => {
       tx.executeSql(
-        'SELECT * FROM messages WHERE conversation_id = ?',
+        'SELECT * FROM messages WHERE conversationId = ?',
         [props.navigation.getParam('id', null)],
         (_, { rows: { _array } }) => {
           setMessages(_array)
@@ -25,30 +74,22 @@ export default Conversation = props => {
   }
 
   useEffect(() => {
-    setParticipants([
-      {
-        id: 0,
-        name: 'Me',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        user: true,
-      },
-      {
-        id: 1,
-        name: 'SomeoneElse',
-        image: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-        user: false,
-      },
-    ])
-
+    getParticipants()
     getMessages()
   }, [databaseState])
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (newMessage.length === 0) return
 
-    database.transaction(tx => {
+    console.log(participants[1])
+
+    const cipherText = await sendMessage(newMessage, participants[1].registationId)
+
+    console.log(cipherText)
+
+    /*database.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO messages (content, type, date, sender_id, conversation_id) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO messages (content, type, date, contactId, conversationId) VALUES (?, ?, ?, ?, ?)',
         [newMessage, 'text', new Date(), 0, props.navigation.getParam('id', null)],
         () => {
           setDatabaseState(prevState => prevState + 1)
@@ -56,7 +97,7 @@ export default Conversation = props => {
       )
     })
 
-    setNewMessage('')
+    setNewMessage('')*/
   }
 
   return (
@@ -75,8 +116,8 @@ export default Conversation = props => {
           return (
             <Message
               key={i}
-              sender={participants.find(p => {
-                return p.id === item.sender_id
+              user={participants.find(p => {
+                return p.id === item.contactId
               })}
               content={item.content}
               timestamp={item.timestamp}

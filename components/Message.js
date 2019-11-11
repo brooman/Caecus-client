@@ -2,8 +2,8 @@ import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 
 const Message = props => {
-  const { sender, content, timestamp } = props
-  const styles = createStyleSheet(sender.user)
+  const { contact, content, timestamp } = props
+  const styles = createStyleSheet(contact.me)
   return (
     <View style={styles.row}>
       <View style={styles.bubble}>

@@ -5,8 +5,8 @@ const storeAccessToken = async accessToken => {
   return true
 }
 
-const getAccessToken = () => {
-  return AsyncStorage.getItem('@AccessToken')
+const getAccessToken = async () => {
+  return await AsyncStorage.getItem('@AccessToken')
 }
 
 const storeUser = async user => {
@@ -14,8 +14,8 @@ const storeUser = async user => {
   return true
 }
 
-const getUser = () => {
-  return AsyncStorage.getItem('@User')
+const getUser = async () => {
+  return await AsyncStorage.getItem('@User')
 }
 
 export { storeAccessToken, getAccessToken, storeUser, getUser }

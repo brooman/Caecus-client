@@ -11,15 +11,15 @@ const createDatabase = () => {
           type TEXT,
           content	TEXT,
           date TEXT,
-          sender_id	INTEGER,
-          conversation_id	INTEGER
+          contactId	INTEGER,
+          conversationId	INTEGER
         );
       `)
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS conversations (
           id	INTEGER PRIMARY KEY AUTOINCREMENT,
           name	TEXT NOT NULL,
-          sender_id	INTEGER NOT NULL UNIQUE
+          contactId INTEGER NOT NULL UNIQUE
         );
       `)
       tx.executeSql(`

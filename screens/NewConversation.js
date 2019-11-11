@@ -22,7 +22,7 @@ const NewConversation = props => {
 
     database.transaction(tx => {
       tx.executeSql(
-        `SELECT id FROM conversations WHERE sender_id = ?`,
+        `SELECT id FROM conversations WHERE contactId = ?`,
         [id],
         (_, { rows: { _array } }) => {
           if (_array.length > 0) {
@@ -33,7 +33,7 @@ const NewConversation = props => {
 
       if (conversationId === null) {
         tx.executeSql(
-          `INSERT INTO conversations (name, sender_id) VALUES ((SELECT name FROM contacts WHERE id = ?), ?)`,
+          `INSERT INTO conversations (name, contactId) VALUES ((SELECT name FROM contacts WHERE id = ?), ?)`,
           [id, id],
           (tx, results) => {
             conversationId = results.insertId
