@@ -1,15 +1,35 @@
-import React, { useState, useContext, createContext } from 'react'
+import React, { useState, useContext, createContext, useEffect } from 'react'
 import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { database } from '../app/database/database'
 import { DatabaseContext } from '../app/database/DatabaseContext'
 import Config from '../app/config/'
+import * as AppStorage from '../app/AppStorage'
 
 const NewContact = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [name, setName] = useState('')
   const [identifier, setIdentifier] = useState('')
-  const { startSession } = useSignal()
+  const { startSession, decryptMessage } = useSignal()
+
+  useEffect(() => {
+    AppStorage.getUser().then(user => {
+      fetch(`${Config.host.http}/messages/recieve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: user,
+      })
+        .then(res => res.json())
+        .then(json => {
+          json.map(msg => {
+            console.log(msg)
+            decryptMessage(msg.message, msg.registrationId)
+          })
+        })
+    })
+  })
 
   const handleSubmit = () => {
     if (name.length < 3) return

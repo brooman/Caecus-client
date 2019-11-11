@@ -63,8 +63,12 @@ export default useSignal = () => {
     return run(Scripts.startSession(identity, registrationId, deviceId, signedPreKey, preKey))
   }
 
-  const sendMessage = (msg, recieverRegistrationId, username, identifier) => {
+  const encryptMessage = (msg, recieverRegistrationId, username, identifier) => {
     return run(Scripts.encryptMessage(msg, recieverRegistrationId, '1'))
+  }
+
+  const decryptMessage = (msg, senderRegistrationId) => {
+    return console.log(Scripts.decryptMessage(msg, senderRegistrationId, '1'))
   }
 
   return {
@@ -74,6 +78,7 @@ export default useSignal = () => {
     createPreKeys,
     getRegistrationId,
     startSession,
-    sendMessage,
+    encryptMessage,
+    decryptMessage,
   }
 }

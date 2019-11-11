@@ -12,10 +12,9 @@ export default Home = props => {
   const [conversations, setConversations] = useState([])
 
   useEffect(() => {
-    database.transaction(
-      tx => {
-        tx.executeSql(
-          `
+    database.transaction(tx => {
+      tx.executeSql(
+        `
           SELECT
             conversations.id as id,
             contacts.name,
@@ -23,14 +22,10 @@ export default Home = props => {
           FROM conversations
           INNER JOIN contacts ON conversations.contactId = contacts.id
           `,
-          null,
-          (_, { rows: { _array } }) => setConversations(_array),
-        )
-      },
-      e => {
-        console.warn(e)
-      },
-    )
+        null,
+        (_, { rows: { _array } }) => setConversations(_array),
+      )
+    })
   }, [databaseState])
 
   useEffect(() => {

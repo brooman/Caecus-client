@@ -14,18 +14,22 @@ export default Conversation = props => {
   const [participants, setParticipants] = useState([])
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
-  const { sendMessage } = useSignal()
+  const { encryptMessage } = useSignal()
 
-  const getParticipants = async () => {
-    const user = JSON.parse(await AppStorage.getUser())
-    const participants = [
-      {
-        id: 0,
-        name: user.username,
-        identifier: user.identifier,
-        me: true,
-      },
-    ]
+  const getParticipants = () => {
+    const p = []
+
+    AppStorage.getUser()
+      .then(user => JSON.parse(user))
+      .then(user => {
+        p.push({
+          id: 0,
+          name: user.username,
+          identifier: user.identifier,
+          me: true,
+        })
+      })
+
     let contactId = null
 
     database.transaction(tx => {
@@ -46,7 +50,7 @@ export default Conversation = props => {
           (_, { rows: { _array } }) => {
             const user = _array[0]
 
-            participants.push({
+            p.push({
               id: user.id,
               identifier: user.identifier,
               identityKey: user.identityKey,
@@ -55,12 +59,12 @@ export default Conversation = props => {
               registrationId: user.registrationId,
               me: false,
             })
+
+            setParticipants(p)
           },
         )
       }
     })
-
-    setParticipants(participants)
   }
 
   const getMessages = () => {
@@ -83,7 +87,7 @@ export default Conversation = props => {
   const handleSend = async () => {
     if (newMessage.length === 0) return
 
-    const cipherText = await sendMessage(newMessage, participants[1].registrationId)
+    const cipherText = await encryptMessage(newMessage, participants[1].registrationId)
 
     const data = {
       fromUsername: participants[0].name,
@@ -105,7 +109,7 @@ export default Conversation = props => {
         console.log(json)
       })
 
-    /*database.transaction(tx => {
+    database.transaction(tx => {
       tx.executeSql(
         'INSERT INTO messages (content, type, date, contactId, conversationId) VALUES (?, ?, ?, ?, ?)',
         [newMessage, 'text', new Date().toString(), 0, props.navigation.getParam('id', null)],
@@ -113,9 +117,28 @@ export default Conversation = props => {
           setDatabaseState(prevState => prevState + 1)
         },
       )
-    })*/
+    })
 
     setNewMessage('')
+  }
+
+  const fetchFromServer = () => {
+    const data = {
+      username: participants[0].name,
+      identifier: participants[0].identifier,
+    }
+
+    fetch(`${Config.host.http}/messages/recieve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(res => res.json())
+      .then(json => {
+        console.log(json)
+      })
   }
 
   return (
@@ -128,13 +151,24 @@ export default Conversation = props => {
             })
             .join(', ')}
         </Text>
+        <TouchableOpacity onPress={handleSend}>
+          <Icon
+            reverse
+            name="refresh-cw"
+            type="feather"
+            style={styles.send}
+            onPress={() => {
+              fetchFromServer()
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.messageContainer}>
         {messages.map((item, i) => {
           return (
             <Message
               key={i}
-              user={participants.find(p => {
+              contact={participants.find(p => {
                 return p.id === item.contactId
               })}
               content={item.content}
