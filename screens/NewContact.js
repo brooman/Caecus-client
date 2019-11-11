@@ -33,7 +33,7 @@ const NewContact = props => {
         database.transaction(
           tx => {
             tx.executeSql(
-              `INSERT INTO contacts (name, identifer, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?, ?)`,
+              `INSERT INTO contacts (name, identifier, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?, ?)`,
               [username, identifier, identity, deviceId, registrationId],
               null,
             )

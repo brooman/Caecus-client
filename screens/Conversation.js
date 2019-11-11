@@ -7,6 +7,7 @@ import Message from '../components/Message'
 import { TouchableHighlight } from 'react-native-gesture-handler'
 import useSignal from '../app/signal/useSignal'
 import * as AppStorage from '../app/AppStorage'
+import Config from '../app/config'
 
 export default Conversation = props => {
   const [databaseState, setDatabaseState] = useContext(DatabaseContext)
@@ -16,11 +17,12 @@ export default Conversation = props => {
   const { sendMessage } = useSignal()
 
   const getParticipants = async () => {
-    const user = await AppStorage.getUser()
+    const user = JSON.parse(await AppStorage.getUser())
     const participants = [
       {
         id: 0,
         name: user.username,
+        identifier: user.identifier,
         me: true,
       },
     ]
@@ -46,7 +48,7 @@ export default Conversation = props => {
 
             participants.push({
               id: user.id,
-              identifer: user.identifer,
+              identifier: user.identifier,
               identityKey: user.identityKey,
               image: user.image,
               name: user.name,
@@ -81,23 +83,39 @@ export default Conversation = props => {
   const handleSend = async () => {
     if (newMessage.length === 0) return
 
-    console.log(participants[1])
+    const cipherText = await sendMessage(newMessage, participants[1].registrationId)
 
-    const cipherText = await sendMessage(newMessage, participants[1].registationId)
+    const data = {
+      fromUsername: participants[0].name,
+      fromIdentifier: participants[0].identifier,
+      toUsername: participants[1].name,
+      toIdentifier: participants[1].identifier,
+      message: cipherText,
+    }
 
-    console.log(cipherText)
+    fetch(`${Config.host.http}/messages/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(res => res.json())
+      .then(json => {
+        console.log(json)
+      })
 
     /*database.transaction(tx => {
       tx.executeSql(
         'INSERT INTO messages (content, type, date, contactId, conversationId) VALUES (?, ?, ?, ?, ?)',
-        [newMessage, 'text', new Date(), 0, props.navigation.getParam('id', null)],
+        [newMessage, 'text', new Date().toString(), 0, props.navigation.getParam('id', null)],
         () => {
           setDatabaseState(prevState => prevState + 1)
         },
       )
-    })
+    })*/
 
-    setNewMessage('')*/
+    setNewMessage('')
   }
 
   return (

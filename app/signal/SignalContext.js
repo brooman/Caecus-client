@@ -42,7 +42,6 @@ const SignalContextProvider = props => {
           onMessage={e => {
             event = JSON.parse(e.nativeEvent.data)
             SignalStore.saveInMemoryStore(event.store)
-            console.log(event.msg)
             resolver(event.msg)
           }}
           onLoad={() => {

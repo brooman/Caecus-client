@@ -1,13 +1,12 @@
-export default (msg, registrationId) => {
+export default (msg, registrationId, deviceId) => {
   return `
     ;(() => {
-      let signalMessageToAddress = new ls.SignalProtocolAddress(${registrationId}, '1');
-      let sessionCipher = new ls.SessionCipher(store, signalMessageToAddress);
+      let signalMessageToAddress = new libsignal.SignalProtocolAddress(${registrationId}, ${deviceId});
+      let sessionCipher = new libsignal.SessionCipher(window.SignalStore, signalMessageToAddress);
 
-      sessionCipher.encrypt('${msg}').then(function(ciphertext) {
-        // ciphertext -> { type: <Number>, body: <string> }
-        postMessage({to: signalMessageToAddress.toString(), type: ciphertext.type, body: ciphertext.body});
-    });
+      sessionCipher.encrypt('${msg}').then((ciphertext) => {
+        postMessage({ciphertext: btoa(JSON.stringify(ciphertext))});
+      });
     })()
   `
 }

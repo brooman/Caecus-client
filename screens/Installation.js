@@ -75,7 +75,6 @@ const Installation = props => {
     setLoading(false)
     setUser(json.user)
     setState(state + 1)
-    props.navigation.navigate('Home')
   }
 
   switch (state) {
@@ -117,7 +116,7 @@ const Installation = props => {
             buttonStyle={styles.button}
             title="Finish"
             onPress={() => {
-              setState(state + 1)
+              props.navigation.navigate('Home')
             }}
           />
         </View>
