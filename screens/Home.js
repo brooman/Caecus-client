@@ -1,32 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
-import { database } from '../app/database/database'
+import useDatabase from '../app/database/useDatabase'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
-import { DatabaseContext } from '../app/database/DatabaseContext'
 import * as AppStorage from '../app/AppStorage'
 
 export default Home = props => {
   const [isInstalled, setIsInstalled] = useState(true)
-  const [databaseState, setDatabaseState] = useContext(DatabaseContext)
   const [conversations, setConversations] = useState([])
-
-  useEffect(() => {
-    database.transaction(tx => {
-      tx.executeSql(
-        `
-          SELECT
-            conversations.id as id,
-            contacts.name,
-            contacts.image
-          FROM conversations
-          INNER JOIN contacts ON conversations.contactId = contacts.id
-          `,
-        null,
-        (_, { rows: { _array } }) => setConversations(_array),
-      )
-    })
-  }, [databaseState])
+  const { getConversations } = useDatabase()
 
   useEffect(() => {
     AppStorage.getUser().then(res => setIsInstalled(res))
@@ -34,6 +16,8 @@ export default Home = props => {
     if (!isInstalled) {
       props.navigation.navigate('Installation')
     }
+
+    getConversations().then(res => setConversations(res))
   })
 
   return (

@@ -1,5 +1,5 @@
 import { AsyncStorage } from 'react-native'
-import { database } from '../database/database'
+import { database } from '../database/useDatabase'
 
 const saveInMemoryStore = async value => {
   await AsyncStorage.setItem('_store', value)

@@ -5,7 +5,16 @@ const DatabaseContext = React.createContext([{}, () => {}])
 const DatabaseContextProvider = props => {
   const [state, setState] = useState(0)
   const { children } = props
-  return <DatabaseContext.Provider value={[state, setState]}>{children}</DatabaseContext.Provider>
+
+  const updateDatabaseState = () => {
+    setState(state + 1)
+  }
+
+  return (
+    <DatabaseContext.Provider value={{ updateDatabaseState: updateDatabaseState }}>
+      {children}
+    </DatabaseContext.Provider>
+  )
 }
 
 export { DatabaseContext, DatabaseContextProvider }

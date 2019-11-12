@@ -85,6 +85,7 @@ const Installation = props => {
           <Input
             disabled={loading}
             style={styles.input}
+            autoCorrect={false}
             placeholder="Enter your desired username"
             value={username}
             onChangeText={text => {

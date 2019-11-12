@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native'
-import { database } from '../app/database/database'
+import { database } from '../app/database/useDatabase'
 import { DatabaseContext } from '../app/database/DatabaseContext'
 import { Icon } from 'react-native-elements'
 import Message from '../components/Message'
