@@ -1,16 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
 import { Overlay } from 'react-native-elements'
 import { Icon, Button, Input } from 'react-native-elements'
-import { createContact } from '../app/database/useDatabase'
-import { DatabaseContext } from '../app/database/DatabaseContext'
+import { getContact, getPreKeyBundle } from '../app/network'
+import { useDatabase } from '../app/database/useDatabase'
 import * as AppStorage from '../app/AppStorage'
 
-const NewContact = props => {
+const NewContact = (props) => {
   const [input, setInput] = useState('')
   const [validUsername, setValidUsername] = useState(false)
   const [name, setName] = useState('')
   const [identifier, setIdentifier] = useState('')
+  const { createContact } = useDatabase()
   const { startSession } = useSignal()
 
   const handleSubmit = async () => {
@@ -19,7 +20,11 @@ const NewContact = props => {
       identifier: identifier,
     }
 
-    await createContact(body)
+    const contact = await getContact(body)
+    const preKeyBundle = await getPreKeyBundle(body)
+
+    await createContact(contact)
+    await startSession(Object.assign(contact, preKeyBundle))
 
     props.setIsVisible(false)
   }
@@ -30,8 +35,7 @@ const NewContact = props => {
       height={250}
       onBackdropPress={() => {
         props.setIsVisible(false)
-      }}
-    >
+      }}>
       <View style={styles.container}>
         <View style={styles.inputContainer}>
           <Input
@@ -40,7 +44,7 @@ const NewContact = props => {
             placeholder="Username#1234"
             value={input}
             autoCorrect={false}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setInput(text)
 
               const regex = /^[A-Za-z]{3,16}#[0-9]{4}$/

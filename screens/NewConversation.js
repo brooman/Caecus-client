@@ -3,22 +3,21 @@ import { StyleSheet, ScrollView } from 'react-native'
 import { database } from '../app/database/useDatabase'
 import { Card, ListItem, Icon } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
-import useDatabase from '../app/database/useDatabase'
+import { useDatabase } from '../app/database/useDatabase'
 import NewContact from '../components/NewContact'
 
-const NewConversation = props => {
-  const { getContacts, createConversation } = useDatabase()
+const NewConversation = (props) => {
+  const { getContacts, findOrCreateConversation } = useDatabase()
   const [contacts, setContacts] = useState([])
   const [newContactVisible, setNewContactVisible] = useState(false)
 
   useEffect(() => {
-    getContacts().then(res => setContacts(res))
-  })
+    getContacts().then((res) => setContacts(res))
+  }, [])
 
-  startConversation = contactId => {
-    createConversation(contactId).then(() => {
-      props.navigation.navigate('Home')
-    })
+  const startConversation = (contactId) => {
+    findOrCreateConversation(contactId).then(() => {})
+    props.navigation.navigate('Home')
   }
 
   return (
@@ -62,8 +61,7 @@ const NewConversation = props => {
         title="Start new conversation"
         onPress={() => {
           setNewContactVisible(!newContactVisible)
-        }}
-      >
+        }}>
         <Icon raised reverse name="plus" type="feather" size={26} />
       </TouchableScale>
     </>

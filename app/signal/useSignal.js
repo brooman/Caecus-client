@@ -1,18 +1,9 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
-import Config from '../config'
+import React, { useContext } from 'react'
 import Scripts from './scripts'
 import { SignalContext } from './SignalContext'
-import * as Store from './SignalStore'
 
 export default useSignal = () => {
   const { run } = useContext(SignalContext)
-
-  /**
-   * Get the registration id from storage
-   */
-  const getRegistrationId = async () => {
-    return await Store.getRegistrationId()
-  }
 
   /**
    * Call Signal to generate a RegistrationId
@@ -56,19 +47,19 @@ export default useSignal = () => {
     return run(Scripts.createPreKeys(initialKeyId, count))
   }
 
-  const startSession = res => {
-    const { username, identifier, deviceId } = res.user
-    const { identity, registrationId, signedPreKey, preKey } = res.preKeyBundle
+  const startSession = (data) => {
+    const { deviceId } = data.user
+    const { identity, registrationId, signedPreKey, preKey } = data.preKeyBundle
 
     return run(Scripts.startSession(identity, registrationId, deviceId, signedPreKey, preKey))
   }
 
-  const encryptMessage = (msg, recieverRegistrationId, username, identifier) => {
+  const encryptMessage = (msg, recieverRegistrationId) => {
     return run(Scripts.encryptMessage(msg, recieverRegistrationId, '1'))
   }
 
   const decryptMessage = (msg, senderRegistrationId) => {
-    return console.log(Scripts.decryptMessage(msg, senderRegistrationId, '1'))
+    return run(Scripts.decryptMessage(msg, senderRegistrationId, '1'))
   }
 
   return {
@@ -76,7 +67,6 @@ export default useSignal = () => {
     createIdentity,
     createSignedPreKey,
     createPreKeys,
-    getRegistrationId,
     startSession,
     encryptMessage,
     decryptMessage,

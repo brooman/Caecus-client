@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 import { Input, Button } from 'react-native-elements'
-import * as SignalStore from '../app/signal/SignalStore'
+import useSignalStore from '../app/signal/useSignalStore'
 import useSignal from '../app/signal/useSignal'
 import * as AppStorage from '../app/AppStorage'
-import Config from '../app/config/'
+import { register as networkRegister } from '../app/network'
 
-const Installation = props => {
-  const [state, setState] = useState(0)
+const Installation = (props) => {
+  const [page, setPage] = useState(0)
   const [username, setUsername] = useState('')
   const [user, setUser] = useState({ username: null, identifier: null })
   const [loading, setLoading] = useState(false)
   const { createRegistrationId, createIdentity, createSignedPreKey, createPreKeys } = useSignal()
+  const { storeIdentityKeyPair, storeRegistrationId, storePreKeys } = useSignalStore()
 
   const register = async () => {
     setLoading(true)
@@ -21,11 +22,11 @@ const Installation = props => {
     const signedPreKey = await createSignedPreKey(identity, 5)
     const preKeys = await createPreKeys(registrationId + 1, 5)
 
-    SignalStore.storeIdentityKeyPair(JSON.parse(identity).value)
-    SignalStore.storeRegistrationId(registrationId)
-    SignalStore.storePreKeys(preKeys)
+    await storeIdentityKeyPair(JSON.parse(identity).value)
+    await storeRegistrationId(registrationId)
+    await storePreKeys(preKeys)
 
-    const signedPreKeyPublic = key => {
+    const signedPreKeyPublic = (key) => {
       let k = JSON.parse(key)
 
       return {
@@ -35,10 +36,10 @@ const Installation = props => {
       }
     }
 
-    const preKeysPublic = keys => {
+    const preKeysPublic = (keys) => {
       let k = JSON.parse(keys)
 
-      return k.map(key => {
+      return k.map((key) => {
         return {
           keyId: key.value.keyId,
           key: key.value.keyPair.pubKey,
@@ -56,28 +57,21 @@ const Installation = props => {
       preKeys: preKeysPublic(preKeys),
     }
 
-    fetch(`${Config.host.http}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+    networkRegister(data).then((res) => {
+      finishRegister(res)
     })
-      .then(res => res.json())
-      .then(json => {
-        finishRegister(json)
-      })
   }
 
-  const finishRegister = json => {
+  const finishRegister = (json) => {
+    console.log(typeof json.user, typeof json.access_token)
     AppStorage.storeUser(json.user)
     AppStorage.storeAccessToken(json.access_token)
     setLoading(false)
     setUser(json.user)
-    setState(state + 1)
+    setPage(page + 1)
   }
 
-  switch (state) {
+  switch (page) {
     case 0:
       return (
         <View style={styles.container}>
@@ -88,7 +82,7 @@ const Installation = props => {
             autoCorrect={false}
             placeholder="Enter your desired username"
             value={username}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setUsername(text)
             }}
           />

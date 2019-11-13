@@ -1,19 +1,20 @@
-import React, { useRef, useState, forwardRef, useCallback, useEffect } from 'react'
+import React, { useRef } from 'react'
 import Config from '../config'
 import { View } from 'react-native'
 import { WebView } from 'react-native-webview'
-import * as SignalStore from './SignalStore'
+import useSignalStore from './useSignalStore'
 import Scripts from './scripts'
 
 const SignalContext = React.createContext([{}, () => {}])
 
-const SignalContextProvider = props => {
+const SignalContextProvider = (props) => {
   const _ref = useRef(null)
+  const { saveInMemoryStore, getInMemoryStore } = useSignalStore()
 
   let resolver
 
-  const run = async code => {
-    const promise = new Promise(resolve => {
+  const run = async (code) => {
+    const promise = new Promise((resolve) => {
       resolver = resolve
     })
 
@@ -39,13 +40,13 @@ const SignalContextProvider = props => {
           source={{
             html: html,
           }}
-          onMessage={e => {
+          onMessage={(e) => {
             event = JSON.parse(e.nativeEvent.data)
-            SignalStore.saveInMemoryStore(event.store)
+            saveInMemoryStore(event.store)
             resolver(event.msg)
           }}
           onLoad={() => {
-            SignalStore.getInMemoryStore().then(res => {
+            getInMemoryStore().then((res) => {
               return _ref.current.injectJavaScript(Scripts.updateStore(res))
             })
           }}

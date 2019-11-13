@@ -1,24 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
-import useDatabase from '../app/database/useDatabase'
+import { useDatabase } from '../app/database/useDatabase'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
 import * as AppStorage from '../app/AppStorage'
 
-export default Home = props => {
+export default Home = (props) => {
   const [isInstalled, setIsInstalled] = useState(true)
   const [conversations, setConversations] = useState([])
   const { getConversations } = useDatabase()
 
   useEffect(() => {
-    AppStorage.getUser().then(res => setIsInstalled(res))
+    AppStorage.getUser().then((res) => setIsInstalled(res))
 
     if (!isInstalled) {
       props.navigation.navigate('Installation')
     }
 
-    getConversations().then(res => setConversations(res))
-  })
+    getConversations().then((res) => setConversations(res))
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -61,8 +61,7 @@ export default Home = props => {
         title="Start new conversation"
         onPress={() => {
           props.navigation.navigate('NewConversation')
-        }}
-      >
+        }}>
         <Icon raised reverse name="plus" type="feather" size={26} />
       </TouchableScale>
     </View>
