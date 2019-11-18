@@ -11,14 +11,16 @@ export default Home = (props) => {
   const { getConversations } = useDatabase()
 
   useEffect(() => {
-    AppStorage.getUser().then((res) => setIsInstalled(res))
+    AppStorage.getUser().then((res) => {
+      setIsInstalled(res)
+    })
 
     if (!isInstalled) {
       props.navigation.navigate('Installation')
     }
 
     getConversations().then((res) => setConversations(res))
-  }, [])
+  })
 
   return (
     <View style={styles.container}>

@@ -28,7 +28,7 @@ const createDatabase = () => {
         CREATE TABLE IF NOT EXISTS contacts (
           id	INTEGER PRIMARY KEY AUTOINCREMENT,
           name	TEXT NOT NULL,
-          identifer TEXT NOT NULL,
+          identifier TEXT NOT NULL,
           identityKey TEXT NOT NULL,
           deviceId INT NOT NULL,
           registrationId NOT NULL,
@@ -108,7 +108,6 @@ const useDatabase = () => {
           `INSERT INTO contacts (name, identifier, identityKey, deviceId, registrationId) VALUES (?, ?, ?, ?, ?)`,
           [username, identifier, identity, deviceId, registrationId],
           (tx, results) => {
-            updateDatabaseState()
             resolve(results.insertId)
           },
           (tx, e) => {
@@ -123,7 +122,7 @@ const useDatabase = () => {
     return new Promise((resolve, reject) => {
       database.transaction((tx) => {
         tx.executeSql(
-          `SELECT * FROM contacts WHERE username = ? AND identifier = ?`,
+          `SELECT * FROM contacts WHERE name = ? AND identifier = ?`,
           [username, identifier],
           (_, { rows: { _array } }) => {
             if (_array[0]) {
@@ -175,7 +174,6 @@ const useDatabase = () => {
           `INSERT INTO conversations (name, contactId) VALUES ((SELECT name FROM contacts WHERE id = ?), ?)`,
           [contactId, contactId],
           (tx, results) => {
-            updateDatabaseState()
             resolve(results.insertId)
           },
         )
@@ -192,6 +190,9 @@ const useDatabase = () => {
           (_, { rows: { _array } }) => {
             resolve(_array)
           },
+          (tx, e) => {
+            console.log(e)
+          },
         )
       })
     })
@@ -206,8 +207,10 @@ const useDatabase = () => {
           'INSERT INTO messages (content, type, date, contactId, conversationId) VALUES (?, ?, ?, ?, ?)',
           [message, type, date, contactId, conversationId],
           () => {
-            updateDatabaseState()
             resolve(true)
+          },
+          (tx, e) => {
+            console.log(e)
           },
         )
       })

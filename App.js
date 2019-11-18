@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { createDatabase, useDatabase } from './app/database/useDatabase'
-import { getContact } from './app/network/'
+import { getContact, recieveMessages, registerRecieved } from './app/network/'
+import useSignal from './app/signal/useSignal'
 import * as AppStorage from './app/AppStorage'
 
 import Home from './screens/Home'
@@ -27,53 +28,81 @@ const RootStack = createStackNavigator({
 
 const AppContainer = createAppContainer(RootStack)
 
-export default () => {
-  const { findContact, findOrCreateConversation } = useDatabase()
+const IncomingMessageHandler = () => {
+  const [runId, setRunId] = useState(0)
+  const { createMessage, createContact, findContact, findOrCreateConversation } = useDatabase()
+  const { decryptMessage } = useSignal()
 
-  useEffect(() => {
-    setInterval(() => {
-      AppStorage.getUser().then((user) => {
-        if (user && user.name && user.identifier) {
-          const data = {
-            username: user.name,
-            identifier: user.identifier,
-          }
+  const run = () => {
+    return new Promise(async (resolve) => {
+      const user = await AppStorage.getUser()
 
-          recieveMessages(data).then((messages) => {
-            const promises = messages.map(async (message) => {
-              let { contactId } = await findContact(message.username, message.identifier)
+      if (user) {
+        const incomingMessages = await recieveMessages(user)
+        console.log(incomingMessages)
 
-              if (!contactId) {
-                const contact = await createContact(
-                  await getContact(message.username, message.identifier),
-                )
-                contactId = contact.id
-              }
+        if (incomingMessages.length > 0) {
+          const promises = incomingMessages.map(async (incomingMessage) => {
+            let contact = await findContact(incomingMessage.username, incomingMessage.identifier)
 
-              const { conversationId } = await findOrCreateConversation(contactId)
-
-              return {
-                message: await decryptMessage(message.message),
-                type: 'text',
-                date: message.date,
-                contactId: contactId,
-                conversationId: conversationId,
-              }
-            })
-
-            Promise.all(promises).then((decryptedMessages) => {
-              decryptedMessages.map((message) => {
-                createMessage(message)
+            if (!contact) {
+              const c = await getContact({
+                username: incomingMessage.username,
+                identifier: incomingMessage.identifier,
               })
+
+              await createContact(c)
+              contact = await findContact(incomingMessage.username, incomingMessage.identifier)
+            }
+
+            const conversationId = await findOrCreateConversation(contact.id)
+            const decryptedMessage = await decryptMessage(
+              incomingMessage.message,
+              contact.registrationId,
+            )
+
+            return {
+              id: incomingMessage.id,
+              message: decryptedMessage.message,
+              type: 'text',
+              date: incomingMessage.date,
+              contactId: contact.id,
+              conversationId: conversationId,
+            }
+          })
+
+          Promise.all(promises).then((decryptedMessages) => {
+            const handled = decryptedMessages.map((message) => {
+              createMessage(message).then(() => {})
+              return message.id
             })
+
+            registerRecieved({ messageIds: handled }).then((res) => {})
+
+            resolve(true)
           })
         }
-      })
-    }, 30000)
-  }, [])
+      }
 
+      resolve(false)
+    })
+  }
+
+  useEffect(() => {
+    run().then(() => {
+      setTimeout(() => {
+        setRunId(runId + 1)
+      }, 5000)
+    })
+  }, [runId])
+
+  return <></>
+}
+
+export default () => {
   return (
     <SignalContextProvider>
+      <IncomingMessageHandler />
       <DatabaseContextProvider>
         <AppContainer />
       </DatabaseContextProvider>

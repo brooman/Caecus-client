@@ -63,7 +63,6 @@ const Installation = (props) => {
   }
 
   const finishRegister = (json) => {
-    console.log(typeof json.user, typeof json.access_token)
     AppStorage.storeUser(json.user)
     AppStorage.storeAccessToken(json.access_token)
     setLoading(false)

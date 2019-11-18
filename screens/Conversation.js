@@ -14,7 +14,7 @@ export default Conversation = (props) => {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const { encryptMessage, decryptMessage } = useSignal()
-  const { getContactFromConversationId, getMessages } = useDatabase()
+  const { createMessage, getContactFromConversationId, getMessages } = useDatabase()
 
   const getParticipants = () => {
     const p = []
@@ -39,7 +39,7 @@ export default Conversation = (props) => {
 
   useEffect(() => {
     getParticipants()
-    getMessages().then((messages) => {
+    getMessages(props.navigation.getParam('id')).then((messages) => {
       setMessages(messages)
     })
   }, [])

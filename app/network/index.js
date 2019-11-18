@@ -13,6 +13,7 @@ const getContact = (body) => {
       .then((json) => {
         resolve(json)
       })
+      .catch((e) => console.log(e))
   })
 }
 
@@ -29,6 +30,7 @@ const getPreKeyBundle = (body) => {
       .then((json) => {
         resolve(json)
       })
+      .catch((e) => console.log(e))
   })
 }
 
@@ -45,7 +47,7 @@ const sendMessage = (body) => {
       .then((json) => {
         resolve(json)
       })
-  })
+  }).catch((e) => console.log(e))
 }
 
 const recieveMessages = (body) => {
@@ -61,6 +63,24 @@ const recieveMessages = (body) => {
       .then((json) => {
         resolve(json)
       })
+      .catch((e) => console.log(e))
+  })
+}
+
+const registerRecieved = (body) => {
+  return new Promise((resolve) => {
+    fetch(`${Config.host.http}/messages/recieved`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        resolve(json)
+      })
+      .catch((e) => console.log(e))
   })
 }
 
@@ -77,9 +97,18 @@ const register = (body) => {
       .then((json) => {
         resolve(json)
       })
+      .catch((e) => console.log(e))
   })
 }
 
 const login = (body) => {}
 
-export { getContact, getPreKeyBundle, sendMessage, recieveMessages, register, login }
+export {
+  getContact,
+  getPreKeyBundle,
+  sendMessage,
+  recieveMessages,
+  registerRecieved,
+  register,
+  login,
+}

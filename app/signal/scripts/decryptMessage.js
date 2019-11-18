@@ -7,11 +7,11 @@ export default (ciphertext, fromRecipientId, fromDeviceId) => {
 
       if (window.SignalStore.store['session' + address.toString()]) {
         sessionCipher.decryptWhisperMessage(ciphertext.body, 'binary').then((plaintext) => {
-          console.log(dcodeIO.ByteBuffer.wrap(plaintext).toString('binary'))
+          postMessage({message: dcodeIO.ByteBuffer.wrap(plaintext).toString('binary')})
         });
       } else {
         sessionCipher.decryptPreKeyWhisperMessage(ciphertext.body, 'binary').then((plaintext) => {
-          console.log(dcodeIO.ByteBuffer.wrap(plaintext).toString('binary'))
+          postMessage({message: dcodeIO.ByteBuffer.wrap(plaintext).toString('binary')})
         })
       }
 
