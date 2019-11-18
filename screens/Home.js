@@ -4,8 +4,10 @@ import { useDatabase } from '../app/database/useDatabase'
 import { Card, ListItem, Icon, Badge } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
 import * as AppStorage from '../app/AppStorage'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 export default Home = (props) => {
+  const { databaseState, updateDatabaseState } = useContext(DatabaseContext)
   const [isInstalled, setIsInstalled] = useState(true)
   const [conversations, setConversations] = useState([])
   const { getConversations } = useDatabase()
@@ -19,7 +21,9 @@ export default Home = (props) => {
       props.navigation.navigate('Installation')
     }
 
-    getConversations().then((res) => setConversations(res))
+    getConversations().then((res) => {
+      setConversations(res)
+    })
   })
 
   return (

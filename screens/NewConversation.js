@@ -5,18 +5,22 @@ import { Card, ListItem, Icon } from 'react-native-elements'
 import TouchableScale from 'react-native-touchable-scale'
 import { useDatabase } from '../app/database/useDatabase'
 import NewContact from '../components/NewContact'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 const NewConversation = (props) => {
+  const { databaseState, updateDatabaseState } = useContext(DatabaseContext)
   const { getContacts, findOrCreateConversation } = useDatabase()
   const [contacts, setContacts] = useState([])
   const [newContactVisible, setNewContactVisible] = useState(false)
 
   useEffect(() => {
     getContacts().then((res) => setContacts(res))
-  }, [])
+  }, [databaseState])
 
   const startConversation = (contactId) => {
-    findOrCreateConversation(contactId).then(() => {})
+    findOrCreateConversation(contactId).then(() => {
+      updateDatabaseState()
+    })
     props.navigation.navigate('Home')
   }
 

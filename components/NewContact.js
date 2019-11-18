@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
 import { Overlay } from 'react-native-elements'
 import { Icon, Button, Input } from 'react-native-elements'
 import { getContact, getPreKeyBundle } from '../app/network'
 import { useDatabase } from '../app/database/useDatabase'
 import * as AppStorage from '../app/AppStorage'
+import { DatabaseContext } from '../app/database/DatabaseContext'
 
 const NewContact = (props) => {
+  const { updateDatabaseState } = useContext(DatabaseContext)
   const [input, setInput] = useState('')
   const [validUsername, setValidUsername] = useState(false)
   const [name, setName] = useState('')
@@ -27,6 +29,8 @@ const NewContact = (props) => {
     await startSession(Object.assign(contact, preKeyBundle))
 
     props.setIsVisible(false)
+
+    updateDatabaseState()
   }
 
   return (

@@ -51,8 +51,6 @@ const createDatabase = () => {
 }
 
 const useDatabase = () => {
-  const { updateDatabaseState } = useContext(DatabaseContext)
-
   const getContacts = () => {
     return new Promise((resolve) => {
       database.transaction((tx) => {

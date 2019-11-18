@@ -11,8 +11,8 @@ const DatabaseContextProvider = (props) => {
   }
 
   return (
-    <DatabaseContext.Provider value={{ updateDatabaseState: updateDatabaseState }}>
-      {console.log(state)}
+    <DatabaseContext.Provider
+      value={{ databaseState: state, updateDatabaseState: updateDatabaseState }}>
       {children}
     </DatabaseContext.Provider>
   )

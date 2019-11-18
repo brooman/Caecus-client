@@ -39,9 +39,16 @@ export default Conversation = (props) => {
 
   useEffect(() => {
     getParticipants()
-    getMessages(props.navigation.getParam('id')).then((messages) => {
-      setMessages(messages)
-    })
+
+    const interval = setInterval(() => {
+      getMessages(props.navigation.getParam('id')).then((messages) => {
+        setMessages(messages)
+      })
+    }, 500)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [])
 
   const handleSend = async () => {
